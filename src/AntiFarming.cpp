@@ -10,14 +10,14 @@ class AntiFarmingPlayerScript : public PlayerScript {
 public: AntiFarmingPlayerScript() : PlayerScript("AntiFarmingPlayerScript") {}
 
         void OnLogin(Player* player) override {
-            if (sConfigMgr->GetBoolDefault("AntiFarming.Enable", true)) {
-                if (sConfigMgr->GetBoolDefault("AntiFarming.LoginMessage", true))
+            if (sConfigMgr->GetOption<bool>("AntiFarming.Enable", true)) {
+                if (sConfigMgr->GetOption<bool>("AntiFarming.LoginMessage", true))
                     ChatHandler(player->GetSession()).PSendSysMessage("This server is running the |cff4CFF00Antifarming|r Module.");
             }
         }
 
         void OnPVPKill(Player* killer, Player* killed) override {
-            if (sConfigMgr->GetBoolDefault("AntiFarming.Enable", true)) {
+            if (sConfigMgr->GetOption<bool>("AntiFarming.Enable", true)) {
                 uint32 KillerGUID = killer->GetGUID().GetCounter();
                 uint32 VictimGUID = killed->GetGUID().GetCounter();
 
@@ -32,16 +32,16 @@ public: AntiFarmingPlayerScript() : PlayerScript("AntiFarmingPlayerScript") {}
                     sWorld->SendGlobalGMMessage(&data);
 
                     // Kick player
-                    if (sConfigMgr->GetBoolDefault("AntiFarming.KickPlayer", true)) {
-                        uint32 kickWarnings = sConfigMgr->GetIntDefault("AntiFarming.KickPlayer.Warnings", 5);
+                    if (sConfigMgr->GetOption<bool>("AntiFarming.KickPlayer", true)) {
+                        uint32 kickWarnings = sConfigMgr->GetOption<int>("AntiFarming.KickPlayer.Warnings", 5);
                         if (sAntiFarming->dataMap[KillerGUID] >= kickWarnings)
                             killer->GetSession()->KickPlayer();
                     }
 
                     // Ban player
-                    if (sConfigMgr->GetBoolDefault("AntiFarming.BanPlayer", false)) {
-                        std::string banTime = sConfigMgr->GetStringDefault("AntiFarming.BanTime", "1") + "d";
-                        uint32 banWarnings = sConfigMgr->GetIntDefault("AntiFarming.BanPlayer.Warnings", 8);
+                    if (sConfigMgr->GetOption<bool>("AntiFarming.BanPlayer", false)) {
+                        std::string banTime = sConfigMgr->GetOption<std::string>("AntiFarming.BanTime", "1") + "d";
+                        uint32 banWarnings = sConfigMgr->GetOption<bool>("AntiFarming.BanPlayer.Warnings", 8);
                         if (sAntiFarming->dataMap[KillerGUID] >= banWarnings)
                             sBan->BanCharacter(killer->GetName(), banTime, "Ignored warnings of the Anti-Farm System", "Anti-Farm System");
                     }
